@@ -44,7 +44,7 @@ jobs:
       uses: actions/download-artifact@v4  # Updated to v4
       with:
         name: kernel-module-${{ github.event.inputs.model }}-${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
-        path: out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}_${{ github.event.inputs.device-type }}
+        path: out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
       continue-on-error: true  # Continue if the artifact does not exist
 
     - name: Check if artifact exists
