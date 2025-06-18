@@ -1,0 +1,76 @@
+name: Build Kernel Modules
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Model'
+        required: true
+        default: 'ithc'
+        type: choice
+        options:
+          - ithc
+          # Add more models here if needed
+      os-version:
+        description: 'OS Version'
+        required: true
+        type: string
+      device-type:
+        description: 'Device Type'
+        required: true
+        default: 'generic-amd64'
+        type: choice
+        options:
+          - generic-amd64
+          # Add more device types here if needed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        model: [${{ github.event.inputs.model }}]
+        os-version: [${{ github.event.inputs.os-version }}]
+        device-type: [${{ github.event.inputs.device-type }}]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget build-essential
+
+    - name: Download artifacts
+      id: download-artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: kernel-module-${{ matrix.model }}-${{ matrix.os-version }}-${{ matrix.device-type }}
+        path: out/src_${{ matrix.model }}_${{ matrix.os-version }}_${{ matrix.device-type }}
+      continue-on-error: true  # Continue if the artifact does not exist
+
+    - name: Check if artifact exists
+      id: check-artifact
+      run: |
+        if [ -d "out/src_${{ matrix.model }}_${{ matrix.os-version }}_${{ matrix.device-type }}" ]; then
+          echo "Artifact already exists. Skipping build."
+          echo "SKIP_BUILD=true" >> $GITHUB_ENV
+        else
+          echo "Artifact does not exist. Proceeding with build."
+          echo "SKIP_BUILD=false" >> $GITHUB_ENV
+        fi
+
+    - name: Build kernel module
+      if: env.SKIP_BUILD == 'false'
+      run: |
+        ./scripts/build.sh -i src/${{ matrix.model }} -o out -v ${{ matrix.os-version }} -s ${{ matrix.device-type }}
+      env:
+        OS_VERSION: ${{ matrix.os-version }}
+
+    - name: Upload artifacts
+      if: env.SKIP_BUILD == 'false'
+      uses: actions/upload-artifact@v2
+      with:
+        name: kernel-module-${{ matrix.model }}-${{ matrix.os-version }}-${{ matrix.device-type }}
+        path: out/src_${{ matrix.model }}_${{ matrix.os-version }}_${{ matrix.device-type }}
