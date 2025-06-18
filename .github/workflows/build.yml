@@ -73,4 +73,4 @@ jobs:
       uses: actions/upload-artifact@v4  # Updated to v4
       with:
         name: kernel-module-${{ github.event.inputs.model }}-${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
-        path: out/src/${{ github.event.inputs.model }}_${{ github.event.inputs.device-type }}-${{ github.event.inputs.os-version }}
+        path: out/src/${{ github.event.inputs.model }}_${{ github.event.inputs.device-type }}_${{ github.event.inputs.os-version }}
