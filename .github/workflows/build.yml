@@ -27,11 +27,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        model: [${{ github.event.inputs.model }}]
-        os-version: [${{ github.event.inputs.os-version }}]
-        device-type: [${{ github.event.inputs.device-type }}]
 
     steps:
     - name: Checkout code
@@ -48,14 +43,14 @@ jobs:
       id: download-artifacts
       uses: actions/download-artifact@v2
       with:
-        name: kernel-module-${{ matrix.model }}-${{ matrix.os-version }}-${{ matrix.device-type }}
-        path: out/src_${{ matrix.model }}_${{ matrix.os-version }}_${{ matrix.device-type }}
+        name: kernel-module-${{ github.event.inputs.model }}-${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
+        path: out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}_${{ github.event.inputs.device-type }}
       continue-on-error: true  # Continue if the artifact does not exist
 
     - name: Check if artifact exists
       id: check-artifact
       run: |
-        if [ -d "out/src_${{ matrix.model }}_${{ matrix.os-version }}_${{ matrix.device-type }}" ]; then
+        if [ -d "out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}" ]; then
           echo "Artifact already exists. Skipping build."
           echo "SKIP_BUILD=true" >> $GITHUB_ENV
         else
@@ -66,13 +61,13 @@ jobs:
     - name: Build kernel module
       if: env.SKIP_BUILD == 'false'
       run: |
-        ./scripts/build.sh -i src/${{ matrix.model }} -o out -v ${{ matrix.os-version }} -s ${{ matrix.device-type }}
+        ./scripts/build.sh -i src/${{ github.event.inputs.model }} -o out -v ${{ github.event.inputs.os-version }} -s ${{ github.event.inputs.device-type }}
       env:
-        OS_VERSION: ${{ matrix.os-version }}
+        OS_VERSION: ${{ github.event.inputs.os-version }}
 
     - name: Upload artifacts
       if: env.SKIP_BUILD == 'false'
       uses: actions/upload-artifact@v2
       with:
-        name: kernel-module-${{ matrix.model }}-${{ matrix.os-version }}-${{ matrix.device-type }}
-        path: out/src_${{ matrix.model }}_${{ matrix.os-version }}_${{ matrix.device-type }}
+        name: kernel-module-${{ github.event.inputs.model }}-${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
+        path: out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
