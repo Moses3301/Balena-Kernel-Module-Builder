@@ -1,0 +1,3 @@
+[submodule "src/ithc"]
+	path = src/ithc
+	url = https://github.com/quo/ithc-linux.git
