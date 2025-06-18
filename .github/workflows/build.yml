@@ -37,7 +37,7 @@ jobs:
     - name: Set up environment
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget build-essential
+        sudo apt-get install -y wget build-essential libelf-dev bc dkms
 
     - name: Make build script executable
       run: chmod +x ./scripts/build.sh
