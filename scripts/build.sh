@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-. include/logging
+. include/logging.sh
 set -o errexit
 set -o pipefail
 readonly script_name=$(basename "${0}")
