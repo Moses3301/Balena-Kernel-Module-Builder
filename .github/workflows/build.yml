@@ -41,7 +41,7 @@ jobs:
 
     - name: Download artifacts
       id: download-artifacts
-      uses: actions/download-artifact@v3  # Updated to v3
+      uses: actions/download-artifact@v4  # Updated to v4
       with:
         name: kernel-module-${{ github.event.inputs.model }}-${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
         path: out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}_${{ github.event.inputs.device-type }}
@@ -67,7 +67,7 @@ jobs:
 
     - name: Upload artifacts
       if: env.SKIP_BUILD == 'false'
-      uses: actions/upload-artifact@v3  # Updated to v3
+      uses: actions/upload-artifact@v4  # Updated to v4
       with:
         name: kernel-module-${{ github.event.inputs.model }}-${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
         path: out/src_${{ github.event.inputs.model }}_${{ github.event.inputs.os-version }}-${{ github.event.inputs.device-type }}
